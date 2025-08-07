@@ -31,6 +31,9 @@ const Index = () => {
           <Link to="/salary-receipt">
             <Button variant="outline" size="lg">Salary Receipt</Button>
           </Link>
+          <Link to="/teachers">
+            <Button variant="outline" size="lg">Manage Teachers</Button>
+          </Link>
         </div>
       </section>
     </main>

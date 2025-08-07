@@ -13,10 +13,6 @@ const today = () => format(new Date(), "yyyy-MM-dd");
 
 const AppointmentLetter: React.FC = () => {
   const [data, setData] = useState<AppointmentLetterData>({
-    schoolName: "",
-    logoUrl: "",
-    address: "",
-    contact: "",
     date: today(),
     recipientName: "",
     designation: "",
@@ -32,10 +28,7 @@ const AppointmentLetter: React.FC = () => {
     documentTitle: `${data.recipientName || "Appointment"}-Letter`,
   });
 
-  const pageTitle = useMemo(
-    () => `Appointment Letter Generator | ${data.schoolName || "Formal Forge"}`,
-    [data.schoolName]
-  );
+  const pageTitle = "Appointment Letter Generator | Formal Forge";
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-accent/30">
@@ -58,22 +51,6 @@ const AppointmentLetter: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="schoolName">School/Org Name</Label>
-                  <Input id="schoolName" value={data.schoolName} onChange={(e) => setData({ ...data, schoolName: e.target.value })} />
-                </div>
-                <div>
-                  <Label htmlFor="logoUrl">Logo URL (optional)</Label>
-                  <Input id="logoUrl" placeholder="https://..." value={data.logoUrl} onChange={(e) => setData({ ...data, logoUrl: e.target.value })} />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="address">Address (optional)</Label>
-                  <Input id="address" value={data.address} onChange={(e) => setData({ ...data, address: e.target.value })} />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="contact">Contact (optional)</Label>
-                  <Input id="contact" value={data.contact} onChange={(e) => setData({ ...data, contact: e.target.value })} />
-                </div>
                 <div>
                   <Label htmlFor="date">Date</Label>
                   <Input id="date" type="date" value={data.date} onChange={(e) => setData({ ...data, date: e.target.value })} />
@@ -107,7 +84,7 @@ const AppointmentLetter: React.FC = () => {
               <div className="flex gap-3 pt-2">
                 <Button variant="hero" onClick={handlePrint}>Print / Save PDF</Button>
                 <Button variant="outline" onClick={() => setData({
-                  schoolName: "", logoUrl: "", address: "", contact: "", date: today(), recipientName: "", designation: "", employeeId: "", reportingDate: today(), terms: "", principalName: ""
+                  date: today(), recipientName: "", designation: "", employeeId: "", reportingDate: today(), terms: "", principalName: ""
                 })}>Reset</Button>
               </div>
             </CardContent>

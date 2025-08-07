@@ -1,20 +1,20 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useReactToPrint } from "react-to-print";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SalaryReceiptPreview, { SalaryReceiptData } from "@/components/documents/SalaryReceiptPreview";
 import { ToWords } from "to-words";
+import { Link } from "react-router-dom";
+import { listTeachers, getTeacher, Teacher } from "@/lib/teachers";
 
 const toWords = new ToWords({ localeCode: "en-IN" });
 
 const SalaryReceipt: React.FC = () => {
   const [data, setData] = useState<Omit<SalaryReceiptData, "amountInWords">>({
-    schoolName: "",
-    logoUrl: "",
-    address: "",
     month: "",
     employeeName: "",
     employeeId: "",
@@ -26,6 +26,13 @@ const SalaryReceipt: React.FC = () => {
     accountantName: "",
     principalName: "",
   });
+
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
+
+  useEffect(() => {
+    setTeachers(listTeachers());
+  }, []);
 
   const gross = data.basicPay + data.hra + data.allowances;
   const net = Math.max(0, gross - data.deductions);
@@ -39,10 +46,7 @@ const SalaryReceipt: React.FC = () => {
     documentTitle: `${data.employeeName || "Salary"}-Receipt-${data.month || ""}`,
   });
 
-  const pageTitle = useMemo(
-    () => `Salary Receipt Generator | ${data.schoolName || "Formal Forge"}`,
-    [data.schoolName]
-  );
+  const pageTitle = "Salary Receipt Generator | Formal Forge";
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-accent/30">
@@ -65,17 +69,39 @@ const SalaryReceipt: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="schoolName">School/Org Name</Label>
-                  <Input id="schoolName" value={data.schoolName} onChange={(e) => setData({ ...data, schoolName: e.target.value })} />
-                </div>
-                <div>
-                  <Label htmlFor="logoUrl">Logo URL (optional)</Label>
-                  <Input id="logoUrl" placeholder="https://..." value={data.logoUrl} onChange={(e) => setData({ ...data, logoUrl: e.target.value })} />
-                </div>
                 <div className="sm:col-span-2">
-                  <Label htmlFor="address">Address (optional)</Label>
-                  <Input id="address" value={data.address} onChange={(e) => setData({ ...data, address: e.target.value })} />
+                  <Label>Teacher</Label>
+                  <div className="flex gap-3 mt-1">
+                    <Select value={selectedTeacherId} onValueChange={(val) => {
+                      setSelectedTeacherId(val);
+                      const t = getTeacher(val);
+                      if (t) {
+                        setData((d) => ({
+                          ...d,
+                          employeeName: t.name,
+                          employeeId: t.employeeId || "",
+                          designation: t.designation || "",
+                          basicPay: t.basicPay ?? d.basicPay,
+                          hra: t.hra ?? d.hra,
+                          allowances: t.allowances ?? d.allowances,
+                          deductions: t.deductions ?? d.deductions,
+                        }));
+                      }
+                    }}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a teacher" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {teachers.map((t) => (
+                          <SelectItem key={t.id} value={t.id}>{t.name}{t.employeeId ? ` (${t.employeeId})` : ""}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Link to="/teachers">
+                      <Button variant="outline">Manage</Button>
+                    </Link>
+                    <Button variant="outline" onClick={() => setTeachers(listTeachers())}>Refresh</Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="month">Salary Month</Label>
@@ -122,7 +148,7 @@ const SalaryReceipt: React.FC = () => {
               <div className="flex gap-3 pt-2">
                 <Button variant="hero" onClick={handlePrint}>Print / Save PDF</Button>
                 <Button variant="outline" onClick={() => setData({
-                  schoolName: "", logoUrl: "", address: "", month: "", employeeName: "", employeeId: "", designation: "", basicPay: 0, hra: 0, allowances: 0, deductions: 0, accountantName: "", principalName: ""
+                  month: "", employeeName: "", employeeId: "", designation: "", basicPay: 0, hra: 0, allowances: 0, deductions: 0, accountantName: "", principalName: ""
                 })}>Reset</Button>
               </div>
             </CardContent>

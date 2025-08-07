@@ -1,9 +1,7 @@
 import React, { forwardRef } from "react";
+import SchoolHeader from "./SchoolHeader";
 
 export interface SalaryReceiptData {
-  schoolName: string;
-  logoUrl?: string;
-  address?: string;
   month: string;
   employeeName: string;
   employeeId?: string;
@@ -20,9 +18,6 @@ export interface SalaryReceiptData {
 const SalaryReceiptPreview = forwardRef<HTMLDivElement, { data: SalaryReceiptData }>(
   ({ data }, ref) => {
     const {
-      schoolName,
-      logoUrl,
-      address,
       month,
       employeeName,
       employeeId,
@@ -41,23 +36,7 @@ const SalaryReceiptPreview = forwardRef<HTMLDivElement, { data: SalaryReceiptDat
 
     return (
       <article ref={ref as any} className="a4 font-serifDoc">
-        <header className="mb-6 flex items-center gap-4">
-          {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt={`${schoolName} logo`}
-              className="h-16 w-16 object-contain"
-              onError={(e) => ((e.currentTarget.style.display = "none"))}
-              loading="lazy"
-            />
-          ) : null}
-          <div className="flex-1">
-            <h1 className="text-xl font-bold tracking-tight">{schoolName || "School / Organization"}</h1>
-            {address && (
-              <p className="text-sm text-muted-foreground">{address}</p>
-            )}
-          </div>
-        </header>
+        <SchoolHeader />
 
         <div className="text-center mb-6">
           <h2 className="text-lg font-bold uppercase tracking-wide">Salary Receipt</h2>
