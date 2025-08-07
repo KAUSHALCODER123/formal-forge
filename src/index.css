@@ -103,3 +103,26 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Print-ready A4 layout helpers */
+.a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 1rem auto;
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  padding: 16mm;
+  box-shadow: 0 10px 30px -10px hsl(var(--ring) / 0.2);
+  border-radius: var(--radius);
+}
+
+.a4 header, .a4 footer {
+  page-break-inside: avoid;
+}
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+  body { background: white; }
+  .a4 { box-shadow: none; margin: 0; border-radius: 0; }
+  .print-hide { display: none !important; }
+}
